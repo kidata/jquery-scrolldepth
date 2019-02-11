@@ -57,8 +57,11 @@
 
       options = $.extend({}, defaults, options);
 
-      // Return early if document height is too small
-      if ( $(document).height() < options.minHeight ) {
+      // use a selectable element instead the whole document
+      var measuredElement = options.selector || document;
+
+      // Return early if document/element height is too small
+      if ( $(measuredElement).height() < options.minHeight ) {
         return;
       }
 
@@ -296,13 +299,13 @@
 
         $window.on('scroll.scrollDepth', throttle(function() {
           /*
-           * We calculate document and window height on each scroll event to
+           * We calculate document/element and window height on each scroll event to
            * account for dynamic DOM changes.
            */
 
-          var docHeight = $(document).height(),
+          var docHeight = options.selector ? $(measuredElement).height() + $(measuredElement).offset().top : $(measuredElement).height(),
             winHeight = window.innerHeight ? window.innerHeight : $window.height(),
-            scrollDistance = $window.scrollTop() + winHeight,
+            scrollDistance = options.selector ? $window.scrollTop() + $(measuredElement).offset().top + winHeight : $window.scrollTop() + winHeight,
 
             // Recalculate percentage marks
             marks = calculateMarks(docHeight),
